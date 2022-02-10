@@ -1,0 +1,29 @@
+from sqlalchemy import TIMESTAMP, Boolean, Column, ForeignKey, Integer, String, null
+from sqlalchemy.orm import relationship
+from sqlalchemy import text 
+from .database import Base
+
+class Post(Base):
+    __tablename__ = "posts"
+
+    id = Column(Integer, primary_key=True, nullable=False, index=True)
+    title = Column(String, nullable=False)
+    content = Column(String, nullable=False)
+    published = Column(Boolean, nullable=False, server_default='TRUE')
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
+    user_id =  Column(Integer, ForeignKey("users.id",ondelete= "CASCADE"), nullable=False)
+    #Foreign Key references the __tablename__ 
+    user = relationship("User")
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, nullable=False, index=True)
+    email = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
+    phone_numer = Column(String)
+
+class Vote(Base):
+    __tablename__ = "votes"
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    post_id = Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"), primary_key=True)
